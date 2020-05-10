@@ -18,7 +18,7 @@ To save on memory, I explored the number of properties in my dataset that did no
 
 One thing I did during the initial analysist was to check the range for the different transaction dates and it is visualized below:
 
-![](images/transactiondatehist)
+![](images/transactiondatehist.png)
 
 I also found that some of the homes were sold twice during the period that the training data was captured which left multiple records for a particular parcelId. 
 Because only ~100 of the ~90,000 properties had multiple records, we chose to just take a random sales record for each parcel with more than one sales record (as opposed to... always using the most recent record, always using the oldest record, using both records, or engineering a feature from the info).
@@ -29,18 +29,67 @@ When exploring Unique Values in the dataset a few things that I looked for are:
 
 I also found it interesting to explore the Target Variable, shown below:
 
-![](images/targetdistribution)
+![](images/targetdistribution.png)
 
 I keep this in mind when choosing Machine Learning Algorithms and corresponding loss functions. When I plotted the density on a log-scale, the target looks closer to a Normal Distribution:
 
-![](images/targetlogscale)
+![](images/targetlogscale.png)
 
-## Feature Engineering
+## Preprocessing & Feature Engineering
+By creating a preprocessing tool instead of script, preprocessed data file, I was able to change things on the fly during the model build process and speed up iterations.
+In the `02_Preprocessing` Notebook, I did some feature engineering and missing value imputation. Including:
+* Filter features
+* Encoding missing values with a unique value (for that column)
+* Encoding categorical features for us in common Machine Learning algorithms
 
+One example that required `encoding` was the datetime column. For this, I encoded the datetime variable as month and year (disregard day because it won't be included in the data we'll be scoring).
 
+Because most Machine Learning Algorithms do not handle categorical features well, I encoded them as a real number. To be flexible during modeling, I encoded a set of categorical variables with a set of binary features (`dummy encoding`). 
 
 ## Modeling
+#### Defining success
+The final model parameters was based on the evaluation criteria used by the Kaggle competition, Mean Squared Error (MAE).
+#### Tune tree depth
+`learning_rate` and `max_estimators` are indirectly-correlated; the higher the learning rate the fewer trees are needed. Increasing the learning rate will make the models fit faster. This comes with a bit of a hit to accuracy though, so a popular technique is to tune the tree depth with a higher learning rate and then tune the number of trees with a lower learning rate.
 
+While training the model, I looked at the learning curve and compared the MAE of models with a max depth of 2, 3, and 4.
+
+***** training for max depth = 2 *****
+optimal number of trees: 538
+best MAE: 0.0670813421874875
+baseline MAE: 0.06803804369747765
+
+![](images/maxdepth2.png)
+
+***** training for max depth = 3 *****
+optimal number of trees: 435
+best MAE: 0.06709945059252274
+baseline MAE: 0.06803804369747765
+
+![](images/maxdepth3.png)
+
+***** training for max depth = 4 *****
+optimal number of trees: 182
+best MAE: 0.06711932431156699
+baseline MAE: 0.06803804369747765
+
+![](images/maxdepth4.png)
+
+The final parameters settled on were:
+* n_estimators = 1000
+* learning_rate = 0.1
+* max_depth = 2
+* loss = 'lad'
+* subsample = 0.5
+
+optimal number of trees: 560
+best MAE: 0.06712509883803039
+baseline MAE: 0.06803804369747765
+
+![](images/finalparameters.png)
+
+#### Create model object
+I used a Scikit-Learn Pipeline to combine the preprocessing and GBM steps in one package. The pipeline object called `my_model` implements `fit` and `predict` methods (among others). When we call the `fit` method, the pipeline will execute `preprocessor.fit_transform()` on the data we pass in the arguments, then pass the results to `GradientBoostingRegressor.fit()`. Similarly, when we call the `predict` method, it will execute `preprocessor.transform()` and then `GradientBoostingRegressor.predict()`.
 
 ## Results
 

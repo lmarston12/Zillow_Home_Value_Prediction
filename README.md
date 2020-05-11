@@ -107,17 +107,20 @@ When evaluating using the actual model, I got a Mean Absolute Error of 0.692.
 #### Plot model results 
 
 ##### Actuals vs. Predictions
-![](actualsVpredictions.png)
+
+![](images/actualsVprediction.png)
 
 This plot shows exactly where the lack of predictive power is come from - The model is predicting every really close to the average or median (probably median given the choice of loss function) instead of making more useful predictions.
 
 ##### Distribution of Actuals and Predictions
-![](PredictionsActualsHistorgram.png)
+
+![](images/PredictionsActualsHistogram.png)
 
 Note that the model predictions have far less variance than our true response values.
 
 ##### Checking importance of features
-![](FeatureImportance.png)
+
+![](images/FeatureImportance.png)
 
 You can see that tax amount, latitude and logitude (location), square footage, and so on, have the highest importance. These feature importances are on the model for predicting the error between the Zestimate and the actual sale price, so we can conclude that the features are the ones Zillow's model aren't fully capturing signal from.
 

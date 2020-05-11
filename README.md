@@ -82,17 +82,44 @@ The final parameters settled on were:
 * loss = 'lad'
 * subsample = 0.5
 
-optimal number of trees: 560
-best MAE: 0.06712509883803039
-baseline MAE: 0.06803804369747765
+* optimal number of trees: 560
+* best MAE: 0.06712509883803039
+* baseline MAE: 0.06803804369747765
 
 ![](images/finalparameters.png)
+
+This shows that the model has true predictive power because the MAE (0.0671) is lower than the baseline MAE (0.0680).
 
 #### Create model object
 I used a Scikit-Learn Pipeline to combine the preprocessing and GBM steps in one package. The pipeline object called `my_model` implements `fit` and `predict` methods (among others). When we call the `fit` method, the pipeline will execute `preprocessor.fit_transform()` on the data we pass in the arguments, then pass the results to `GradientBoostingRegressor.fit()`. Similarly, when we call the `predict` method, it will execute `preprocessor.transform()` and then `GradientBoostingRegressor.predict()`.
 
-## Results
+#### Fit final model
+I then fit the final model using the training data and saved the results in a folder titled `models`.
 
+## Results
+#### Score test dataset
+I only did this once to avoid overfitting the test set. This test dataset used was released after the Kaggle competition was over, but is not the same format as what is scored as part of the competition. The final evaluation typically would be making a Kaggle submission (optional) however I used this test set to visualize the model results on an out-of-time test set, meaning this data is from another period as the data I trained on the model.
+
+#### Model evaluation
+I evaluated the model using the `naive median prediction method` and resulted in a Mean Absolute Error of 0.0699. This naive forecast involves using the previous observation directly as the forecast without any change.
+
+When evaluating using the actual model, I got a Mean Absolute Error of 0.692. 
+#### Plot model results 
+
+##### Actuals vs. Predictions
+![](actualsVpredictions.png)
+
+This plot shows exactly where the lack of predictive power is come from - The model is predicting every really close to the average or median (probably median given the choice of loss function) instead of making more useful predictions.
+
+##### Distribution of Actuals and Predictions
+![](PredictionsActualsHistorgram.png)
+
+Note that the model predictions have far less variance than our true response values.
+
+##### Checking importance of features
+![](FeatureImportance.png)
+
+You can see that tax amount, latitude and logitude (location), square footage, and so on, have the highest importance. These feature importances are on the model for predicting the error between the Zestimate and the actual sale price, so we can conclude that the features are the ones Zillow's model aren't fully capturing signal from.
 
 ## Next Steps
 

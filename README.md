@@ -103,14 +103,18 @@ I only did this once to avoid overfitting the test set. This test dataset used w
 #### Model evaluation
 I evaluated the model using the `naive median prediction method` and resulted in a Mean Absolute Error of 0.0699. This naive forecast involves using the previous observation directly as the forecast without any change.
 
-When evaluating using the actual model, I got a Mean Absolute Error of 0.692. 
+When evaluating using the actual model, I got a Mean Absolute Error of 0.692. Because the MAE went down, this means that the model does have predictive power. THIS IS A GOOD SIGN. 
+* Note that the MAE does not decrease by that much, but that is because I am trying to predict residuals of an existing model
+
 #### Plot model results 
 
 ##### Actuals vs. Predictions
 
 ![](images/actualsVprediction.png)
 
-This plot shows exactly where the lack of predictive power is come from - The model is predicting every really close to the average or median (probably median given the choice of loss function) instead of making more useful predictions.
+This plot shows exactly where the lack of predictive power is come from - The model is predicting every really close to the average or median (probably median given the choice of loss function) instead of making more useful predictions. Notice that we are predicting everything about zero. This is not a great sign and speaks to why do not see a huge difference in the error between predicting the median and the model predictions.
+
+This is one place where I would be able to show some of the value of the model if I worked for Zillow and knew more about the business model I could know how much the reduction of error nets the company $X amount in revenue.
 
 ##### Distribution of Actuals and Predictions
 
@@ -124,7 +128,16 @@ Note that the model predictions have far less variance than our true response va
 
 You can see that tax amount, latitude and logitude (location), square footage, and so on, have the highest importance. These feature importances are on the model for predicting the error between the Zestimate and the actual sale price, so we can conclude that the features are the ones Zillow's model aren't fully capturing signal from.
 
-## Next Steps
-
-
 ## Appendix
+
+##### Python Notebooks:
+* 01_Zillow_Home_Value_Prediction_EDA.ipynb 
+* 02_Preprocessing.ipynb
+* 03_ModelTuning&Fitting.ipynb
+
+##### Folders:
+* images - holds images and visuals
+* modules - helper and prerocessor scripts
+* models - holds model
+
+Kaggle: [https://www.kaggle.com/c/zillow-prize-1/overview]
